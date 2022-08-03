@@ -1,17 +1,38 @@
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const qrcode = require("qrcode-terminal");
 const fs = require("fs");
+const { PassThrough } = require("stream");
 
 const client = new Client({
   authStrategy: new LocalAuth(),
 });
+
+let Strikes = {
+  offender: [],
+  strikes: [],
+};
+var n = 0;
+
+// Strike checker
+let StrickCheck = (msg, _offender) => {
+  if (Strikes["offender"].includes(_offender)) {
+  } else {
+    Strikes["offender"].push(_offender);
+  }
+
+  console.log(Strikes);
+};
 
 // Setting helper functions
 let Msgtype = (msgData, _ingrp) => {
   if (_ingrp) {
     // Checking message type
     if (msgData.type == "image") {
-      msgData.reply("Dont Spam Group Please");
+      n += 1;
+      msgData.reply("Dont Spam Group Please \n" + n + " strikes");
+
+      // Checking offender and number of strikes
+      StrickCheck(msgData, msgData.author);
     } else {
       if (msgData.body == "/help") {
         client.sendMessage(
@@ -23,7 +44,15 @@ let Msgtype = (msgData, _ingrp) => {
             "/info \t - \t 'Displays need to know information about group'"
         );
       } else if (msgData.body == "/author") {
-        client.sendMessage(msgData.author, "Xen is my creator");
+        client.sendMessage(
+          msgData.author,
+          "Fiifi Amoah is my Creator \n\n" +
+            "Below are his contact info \n" +
+            " * Whatsapp - 233209377749 \n" +
+            " * Github - An0n-xen \n" +
+            " * Linkedin - Fiifi Amoah \n" +
+            " * Twitter comming soon"
+        );
       }
     }
   } else {
@@ -38,7 +67,15 @@ let Msgtype = (msgData, _ingrp) => {
           "/info \t - \t 'Displays need to know information about group'"
       );
     } else if (msgData.body == "/author") {
-      client.sendMessage(msgData.from, "Xen is my creator");
+      client.sendMessage(
+        msgData.from,
+        "Fiifi Amoah is my Creator \n\n" +
+          "Below are his contact info \n" +
+          " * Whatsapp - 233209377749 \n" +
+          " * Github - An0n-xen \n" +
+          " * Linkedin - Fiifi Amoah \n" +
+          " * Twitter comming soon"
+      );
     }
   }
 };
