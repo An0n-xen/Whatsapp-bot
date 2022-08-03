@@ -16,11 +16,24 @@ var n = 0;
 // Strike checker
 let StrickCheck = (msg, _offender) => {
   if (Strikes["offender"].includes(_offender)) {
+    let Ofindex = Strikes["offender"].indexOf(_offender);
+    Strikes["strikes"][Ofindex] += 1;
   } else {
     Strikes["offender"].push(_offender);
+    Strikes["strikes"].push(1);
   }
 
-  console.log(Strikes);
+  // Ejecting user at third strike
+  Strikes["strikes"].forEach((strike) => {
+    if (strike == 3) {
+      msg.reply("Be Gone");
+
+      // removing user
+      //groupMon.removeParticipants([]);
+    }
+  });
+
+  console.log(groupMon);
 };
 
 // Setting helper functions
@@ -49,8 +62,8 @@ let Msgtype = (msgData, _ingrp) => {
           "Fiifi Amoah is my Creator \n\n" +
             "Below are his contact info \n" +
             " * Whatsapp - 233209377749 \n" +
-            " * Github - An0n-xen \n" +
-            " * Linkedin - Fiifi Amoah \n" +
+            " * Github - https://github.com/An0n-xen \n" +
+            " * Linkedin - linkedin.com/in/fiifi-amoah-a60bb51b3 \n" +
             " * Twitter comming soon"
         );
       }
@@ -72,8 +85,8 @@ let Msgtype = (msgData, _ingrp) => {
         "Fiifi Amoah is my Creator \n\n" +
           "Below are his contact info \n" +
           " * Whatsapp - 233209377749 \n" +
-          " * Github - An0n-xen \n" +
-          " * Linkedin - Fiifi Amoah \n" +
+          " * Github - https://github.com/An0n-xen \n" +
+          " * Linkedin - linkedin.com/in/fiifi-amoah-a60bb51b3 \n" +
           " * Twitter comming soon"
       );
     }
