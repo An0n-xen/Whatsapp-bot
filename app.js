@@ -7,20 +7,38 @@ const client = new Client({
 });
 
 // Setting helper functions
-let Msgtype = (msgData) => {
-  // Checking message type
-  if (msgData.type == "image") {
-    msgData.reply("Dont Spam group");
+let Msgtype = (msgData, _ingrp) => {
+  if (_ingrp) {
+    // Checking message type
+    if (msgData.type == "image") {
+      msgData.reply("Dont Spam Group Please");
+    } else {
+      if (msgData.body == "/help") {
+        client.sendMessage(
+          msgData.author,
+          "Hello Do u need help \n\n" +
+            "Here are a list of commands \n" +
+            "/help \t - \t 'Display commands' \n" +
+            "/author \t - \t 'Displays my creator \n" +
+            "/info \t - \t 'Displays need to know information about group'"
+        );
+      } else if (msgData.body == "/author") {
+        client.sendMessage(msgData.author, "Xen is my creator");
+      }
+    }
   } else {
+    // DM chat
     if (msgData.body == "/help") {
       client.sendMessage(
-        msgData.author,
+        msgData.from,
         "Hello Do u need help \n\n" +
           "Here are a list of commands \n" +
           "/help \t - \t 'Display commands' \n" +
           "/author \t - \t 'Displays my creator \n" +
           "/info \t - \t 'Displays need to know information about group'"
       );
+    } else if (msgData.body == "/author") {
+      client.sendMessage(msgData.from, "Xen is my creator");
     }
   }
 };
@@ -29,7 +47,7 @@ let Msgtype = (msgData) => {
 let participantsCheck = (groupPart, _msg) => {
   groupPart.forEach((individuals) => {
     if (individuals.id._serialized == _msg.from) {
-      client.sendMessage(_msg.from, "You send a message");
+      Msgtype(_msg, 0);
     }
   });
 };
@@ -57,7 +75,7 @@ client.on("message", async (msg) => {
   msg.getChat().then((MsgFrom) => {
     if (MsgFrom.name === groupMon.name) {
       // Checking message type
-      Msgtype(msg);
+      Msgtype(msg, 1);
     } else {
       participantsCheck(GroupPart, msg);
     }
