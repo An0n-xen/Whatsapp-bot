@@ -1,7 +1,6 @@
-const { Client, LocalAuth } = require("whatsapp-web.js");
+const { Client, LocalAuth, Buttons, List, Order } = require("whatsapp-web.js");
 const qrcode = require("qrcode-terminal");
 const fs = require("fs");
-const { PassThrough } = require("stream");
 
 const client = new Client({
   authStrategy: new LocalAuth(),
@@ -29,7 +28,7 @@ let StrickCheck = (msg, _offender) => {
       msg.reply("Be Gone");
 
       // removing user
-      //groupMon.removeParticipants([]);
+      //groupMon.removeParticipants([msg.author]);
     }
   });
 
@@ -54,8 +53,10 @@ let Msgtype = (msgData, _ingrp) => {
             "Here are a list of commands \n" +
             "/help \t - \t 'Display commands' \n" +
             "/author \t - \t 'Displays my creator \n" +
-            "/info \t - \t 'Displays need to know information about group'"
+            "/info \t - \t 'Displays need to know information about group'" +
+            "/buy \t - \t Buy from aaenics store"
         );
+        console.log("help function called from group");
       } else if (msgData.body == "/author") {
         client.sendMessage(
           msgData.author,
@@ -66,6 +67,27 @@ let Msgtype = (msgData, _ingrp) => {
             " * Linkedin - linkedin.com/in/fiifi-amoah-a60bb51b3 \n" +
             " * Twitter comming soon"
         );
+
+        // Logging calls
+        console.log("author function called from group");
+      } else if (msgData.body == "/buy") {
+        const productsList = new List(
+          "Buy affordable electronic components from the aaenics store",
+          "View all products",
+          [
+            {
+              title: "Products list",
+              rows: [
+                { id: "arduino", title: "Arduino ($25.23)" },
+                { id: "raspberrypi", title: "Raspberry Pi 4 ($252.30)" },
+                { id: "LED", title: "LED's ($2.44) per peices" },
+              ],
+            },
+          ],
+          "Please select a product"
+        );
+        console.log("buy function called from group");
+        client.sendMessage(msgData.from, productsList);
       }
     }
   } else {
@@ -77,8 +99,10 @@ let Msgtype = (msgData, _ingrp) => {
           "Here are a list of commands \n" +
           "/help \t - \t 'Display commands' \n" +
           "/author \t - \t 'Displays my creator \n" +
-          "/info \t - \t 'Displays need to know information about group'"
+          "/info \t - \t 'Displays need to know information about group'" +
+          "/buy \t - \t Buy from aaenics store"
       );
+      console.log("help function called from participant");
     } else if (msgData.body == "/author") {
       client.sendMessage(
         msgData.from,
@@ -89,6 +113,25 @@ let Msgtype = (msgData, _ingrp) => {
           " * Linkedin - linkedin.com/in/fiifi-amoah-a60bb51b3 \n" +
           " * Twitter comming soon"
       );
+      console.log("author function called from participant");
+    } else if (msgData.body == "/buy") {
+      const productsList = new List(
+        "Buy affordable electronic components from the aaenics store",
+        "View all products",
+        [
+          {
+            title: "Products list",
+            rows: [
+              { id: "arduino", title: "Arduino ($25.23)" },
+              { id: "raspberrypi", title: "Raspberry Pi 4 ($252.30)" },
+              { id: "LED", title: "LED's ($2.44) per peices" },
+            ],
+          },
+        ],
+        "Please select a product"
+      );
+      console.log("buy function called from group");
+      client.sendMessage(msgData.from, productsList);
     }
   }
 };
@@ -120,16 +163,41 @@ client.on("ready", () => {
   });
 });
 
+// Messages
 client.on("message", async (msg) => {
   // Getting message sender
   msg.getChat().then((MsgFrom) => {
     if (MsgFrom.name === groupMon.name) {
       // Checking message type
       Msgtype(msg, 1);
+      console.log(msg);
     } else {
       participantsCheck(GroupPart, msg);
     }
   });
+});
+
+// New member join
+client.on("group_join", async (param) => {
+  const chat = await param.getChat();
+
+  await chat.sendMessage(
+    `Welcome to Test +${param.id.participant.split("@")[0]}`
+  );
+
+  console.log("new member added");
+  // client.sendMessage(groupMon.id._serialized, "Welcome to Test");
+});
+
+//  Member remove
+client.on("group_leave", async (param) => {
+  const chat = await param.getChat();
+
+  await chat.sendMessage(
+    `Goodbye +${param.id.participant.split("@")[0]} have a nice life`
+  );
+
+  console.log("member was removed");
 });
 
 client.initialize();
