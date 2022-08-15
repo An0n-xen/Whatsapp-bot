@@ -154,6 +154,7 @@ client.on("ready", () => {
   client.getChats().then((chat) => {
     // Setting group to monitor
     chat.forEach((chatObj) => {
+      // Enter group name here
       if (chatObj.name === "Test") {
         groupMon = chatObj;
         // getting group participants
